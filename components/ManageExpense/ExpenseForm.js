@@ -31,7 +31,7 @@ const ExpenseForm = ({
       description: inputValue.description,
     };
     const amountValid = !isNaN(expenseData.amount) && expenseData.amount > 0;
-    const dateIsValid = expenseDate?.date?.toString() !== "Invalid Date";
+    const dateIsValid = expenseData?.date?.toString() !== "Invalid Date";
     const descriptionIsValid = expenseData.description?.trim().length > 0;
     if (!amountValid || !dateIsValid || !descriptionIsValid) {
       Alert.alert("Invalid input", "Please Input a Valid");
