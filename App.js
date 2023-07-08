@@ -1,5 +1,10 @@
 import NavigationConfiguration from "./navigation/NavigationConfiguration";
+import ExpensesContextProvider from "./store/expenses-context";
 
 export default function App() {
-  return <NavigationConfiguration />;
+  return (
+    <ExpensesContextProvider>
+      <NavigationConfiguration />
+    </ExpensesContextProvider>
+  );
 }
