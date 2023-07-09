@@ -11,6 +11,12 @@ export default function RecentExpenses() {
     const date7DaysAgo = getDateMinusDays(today, 7);
     return expense.date > date7DaysAgo;
   });
+  // React.useEffect(() => {
+  //   const getExpenses = async () => {
+  //     const expenses = await getExpenses();
+  //   };
+  //   getExpenses();
+  // }, []);
   return (
     <ExpensesOutput
       fallbackText={"No Expenses Registered for the last 7 days"}

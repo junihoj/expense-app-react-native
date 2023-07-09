@@ -7,36 +7,30 @@ import Button from "../UI/Button";
 import { getFormattedDate } from "../../utils/date";
 import { GlobalStyles } from "../../constants/styles";
 
-const ExpenseForm = ({
-  onCancel,
-  onSubmit,
-  submitButtonLabel,
-  defaultValues,
-}) => {
+function ExpenseForm({ onCancel, onSubmit, submitButtonLabel, defaultValues }) {
   const [inputs, setInputs] = useState({
     amount: {
-      value: defaultValues?.amount?.toString() ?? "",
+      value: defaultValues ? defaultValues.amount.toString() : "",
       isValid: true,
     },
     date: {
-      value: defaultValues?.date ? getFormattedDate(defaultValues?.date) : "",
+      value: defaultValues ? getFormattedDate(defaultValues.date) : "",
       isValid: true,
     },
     description: {
-      value: defaultValues?.description ?? "",
+      value: defaultValues ? defaultValues.description : "",
       isValid: true,
     },
   });
 
-  const inputChangedHandler = (inputIdentifier, enteredValue) => {
-    setInputs((prevState) => ({
-      ...prevState,
-      [inputIdentifier]: {
-        isValid: true,
-        value: enteredValue,
-      },
-    }));
-  };
+  function inputChangedHandler(inputIdentifier, enteredValue) {
+    setInputs((curInputs) => {
+      return {
+        ...curInputs,
+        [inputIdentifier]: { value: enteredValue, isValid: true },
+      };
+    });
+  }
   const submitHandler = () => {
     const expenseData = {
       amount: +inputs.amount?.value,
@@ -47,7 +41,6 @@ const ExpenseForm = ({
     const dateIsValid = expenseData?.date?.toString() !== "Invalid Date";
     const descriptionIsValid = expenseData.description?.trim().length > 0;
     if (!amountValid || !dateIsValid || !descriptionIsValid) {
-      // Alert.alert("Invalid input", "Please Input a Valid");
       setInputs((prevState) => ({
         amount: { value: prevState?.amount?.value, isValid: amountValid },
         date: { value: prevState?.date?.value, isValid: dateIsValid },
@@ -61,9 +54,9 @@ const ExpenseForm = ({
     onSubmit(expenseData);
   };
   const formIsInvalid =
-    !inputs.amount?.isValid ||
-    !inputs?.date?.isValid ||
-    !inputs?.description?.isValid;
+    !inputs.amount.isValid ||
+    !inputs.date.isValid ||
+    !inputs.description.isValid;
   return (
     <View style={styles.form}>
       <Text style={styles.title}>Expense Form</Text>
@@ -71,41 +64,33 @@ const ExpenseForm = ({
         <Input
           style={styles.rowInput}
           label="amount"
-          invalid={!inputs?.amount?.isValid}
+          invalid={!inputs.amount.isValid}
           textInputConfig={{
             keyboardType: "decimal-pad",
-            // onchangeText: inputChangedHandler.bind(this, 'amount'),
-            onchangeText: (enteredText) => {
-              inputChangedHandler("amount", enteredText);
-            },
-            value: inputs.amount?.value,
+            onChangeText: inputChangedHandler.bind(this, "amount"),
+            value: inputs.amount.value,
           }}
         />
         <Input
           label="Date"
           style={styles.rowInput}
-          invalid={!inputs?.date?.isValid}
+          invalid={!inputs.date.isValid}
           textInputConfig={{
-            onchangeText: (enteredText) => {
-              inputChangedHandler("date", enteredText);
-            },
-            placeHolder: "YYYY-MM-DD",
+            placeholder: "YYYY-MM-DD",
             maxLength: 10,
-            value: inputs.date?.value,
+            onChangeText: inputChangedHandler.bind(this, "date"),
+            value: inputs.date.value,
           }}
         />
       </View>
       <Input
         label="Description"
-        invalid={!inputs?.date?.isValid}
+        invalid={!inputs.date.isValid}
         textInputConfig={{
-          onchangeText: (enteredText) => {
-            inputChangedHandler("description", enteredText);
-          },
-
+          onChangeText: inputChangedHandler.bind(this, "description"),
           maxLength: 10,
           multiLine: true,
-          value: inputs.description?.value,
+          value: inputs.description.value,
         }}
       />
       {formIsInvalid && (
@@ -121,7 +106,7 @@ const ExpenseForm = ({
       </View>
     </View>
   );
-};
+}
 
 export default ExpenseForm;
 const styles = StyleSheet.create({

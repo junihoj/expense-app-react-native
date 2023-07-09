@@ -7,6 +7,7 @@ import { View } from "react-native";
 import Button from "../components/UI/Button";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
+import { storeExpense } from "../utils/http";
 
 export default function ManageExpenses({ route, navigation }) {
   const editedExpenseId = route.params?.expenseId;
@@ -25,14 +26,10 @@ export default function ManageExpenses({ route, navigation }) {
     navigation.goBack();
   };
   const confirmHandler = (expenseData) => {
-    //  {
-    //     description: "Updated",
-    //     amount: 89.54,
-    //     date: new Date("2023-06-28"),
-    //   }
     if (isEditing) {
       updateExpense(editedExpenseId, expenseData);
     } else {
+      storeExpense(expenseData);
       addExpense(expenseData);
     }
     navigation.goBack();
