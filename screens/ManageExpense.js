@@ -7,7 +7,11 @@ import { View } from "react-native";
 import Button from "../components/UI/Button";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
-import { storeExpense } from "../utils/http";
+import {
+  deleteExpenseAsync,
+  storeExpense,
+  updateExpenseAsync,
+} from "../utils/http";
 
 export default function ManageExpenses({ route, navigation }) {
   const editedExpenseId = route.params?.expenseId;
@@ -18,19 +22,22 @@ export default function ManageExpenses({ route, navigation }) {
   const selectedExpenses = expenses.find(
     (expense) => expense.id === editedExpenseId
   );
-  const deleteExpenseHandler = () => {
+  const deleteExpenseHandler = async () => {
+    await deleteExpenseAsync(editedExpenseId);
+    console.log("edit id", editedExpenseId);
     deleteExpense(editedExpenseId);
     navigation.goBack();
   };
   const cancelHandler = () => {
     navigation.goBack();
   };
-  const confirmHandler = (expenseData) => {
+  const confirmHandler = async (expenseData) => {
     if (isEditing) {
       updateExpense(editedExpenseId, expenseData);
+      await updateExpenseAsync(editedExpenseId, expenseData);
     } else {
-      storeExpense(expenseData);
-      addExpense(expenseData);
+      const id = await storeExpense(expenseData);
+      addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
   };
