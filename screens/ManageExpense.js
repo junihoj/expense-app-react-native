@@ -12,8 +12,12 @@ import {
   storeExpense,
   updateExpenseAsync,
 } from "../utils/http";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
+import ErrorOverlay from "../components/UI/ErrorOverlay";
 
 export default function ManageExpenses({ route, navigation }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   const { deleteExpense, updateExpense, expenses, addExpense } =
@@ -23,15 +27,22 @@ export default function ManageExpenses({ route, navigation }) {
     (expense) => expense.id === editedExpenseId
   );
   const deleteExpenseHandler = async () => {
-    await deleteExpenseAsync(editedExpenseId);
-    console.log("edit id", editedExpenseId);
-    deleteExpense(editedExpenseId);
-    navigation.goBack();
+    setIsSubmitting(true);
+    try {
+      await deleteExpenseAsync(editedExpenseId);
+
+      deleteExpense(editedExpenseId);
+      navigation.goBack();
+    } catch (error) {
+      setIsSubmitting(false);
+      setError("Could not delete Expense, Please try again");
+    }
   };
   const cancelHandler = () => {
     navigation.goBack();
   };
   const confirmHandler = async (expenseData) => {
+    setIsSubmitting(true);
     if (isEditing) {
       updateExpense(editedExpenseId, expenseData);
       await updateExpenseAsync(editedExpenseId, expenseData);
@@ -46,7 +57,15 @@ export default function ManageExpenses({ route, navigation }) {
       title: isEditing ? "Edit Expense" : "Add Expense",
     });
   }, [navigation, isEditing]);
-
+  const resetError = () => {
+    setError(null);
+  };
+  if (error && !isSubmitting) {
+    return <ErrorOverlay message={error} onConfirm={resetError} />;
+  }
+  if (error && !isSubmitting) {
+    return <ErrorOverlay />;
+  }
   return (
     <View style={styles.container}>
       <ExpenseForm
